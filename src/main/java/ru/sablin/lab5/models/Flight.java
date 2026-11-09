@@ -188,7 +188,8 @@ public abstract class Flight {
         Rich.debugLog("Модель самолёта: " + this.NameOfTheAircraftModel);
         Rich.debugLog("id борта: " + this.BortId);
         Rich.debugLog("Приблилизительное время в полёте: " + this.ApproximateFlightTime);
-        Rich.debugLog("Особенность рейса: " + this.getFeatureOfFlight());
+        Rich.debugLog("Особенность рейса: " + this.getFlightEvent());
+        Rich.debugLog("Аннотация: " + this.getAnnotationText());
 
         Rich.spacerPoints();
     }
@@ -205,5 +206,11 @@ public abstract class Flight {
      * особенностью может быть, например, ограничение на багаж)
      * @return String - строка с уникальной особенностью
      */
-    public abstract String getFeatureOfFlight();
+    public abstract String getFlightEvent();
+
+    /**
+     * Абстрактный метод для получения аннотации о рейсе
+     * @return String возвращает текст аннотации рейса
+     */
+    public abstract String getAnnotationText();
 }
