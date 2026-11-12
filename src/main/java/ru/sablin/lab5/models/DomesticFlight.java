@@ -8,29 +8,27 @@ import ru.sablin.lab5.utils.Rich;
  */
 public class DomesticFlight extends Flight {
     /**
-     * Норма провоза багажа
+     * Возможна ли онлайн регистрация на рейс
      */
-    private String baggageAllowance;
+    private boolean isOnlineRegistrationAvailable;
     /**
-     * Питание на борту (есть ли и, если есть, то какое)
+     * лимит провоза багажа в кг
      */
-    private String mealsDuringFlight;
+    private double baggageKgLimit;
 
-//    Геттеры==============================================
-    public String getBaggageAllowance(){
-        return this.baggageAllowance;
+    //    Геттеры==============================================
+    public boolean getIsOnlineRegistrationAvailable(){
+        return this.isOnlineRegistrationAvailable;
     }
-
-    public String getMealsDuringFlight(){
-        return this.mealsDuringFlight;
+    public double getBaggageKgLimit(){
+        return this.baggageKgLimit;
     }
-//    Сеттеры==============================================
-    public void setBaggageAllowance(String baggageAllowance){
-        this.baggageAllowance = baggageAllowance;
+    //    Сеттеры==============================================
+    public void setIsOnlineRegistrationAvailable(boolean isOnlineRegistrationAvailable){
+        this.isOnlineRegistrationAvailable = isOnlineRegistrationAvailable;
     }
-
-    public void setMealsDuringFlight(String mealsDuringFlight){
-        this.mealsDuringFlight = mealsDuringFlight;
+    public void setBaggageKgLimit(double baggageKgLimit){
+        this.baggageKgLimit = baggageKgLimit;
     }
 
     /**
@@ -45,20 +43,59 @@ public class DomesticFlight extends Flight {
      * @param numberOfSeats int - число мест
      * @param bortId int - номер борта
      * @param nameOfTheAircraftModel String - название модели самолёта (борта)
-     * @param baggageAllowance String - нормы багажа
-     * @param mealsDuringFlight String - информация о питании во время полёта
+     * @param isOnlineRegistrationAvailable - boolean - разрешена ли онлайн регистрация на рейс
+     * @param baggageKgLimit - double - лимит багажа в кг
      */
     public DomesticFlight(int flightId, String pointOfDeparture, String destinationPoint,
                           String carrierCompany, int approximateFlightTime,
-                          String departureTime, int baseTicketPrice, int numberOfSeats, int bortId,
-                          String nameOfTheAircraftModel, String baggageAllowance, String mealsDuringFlight) {
+                          String departureTime, int baseTicketPrice,
+                          int numberOfSeats, int bortId, String nameOfTheAircraftModel,
+                          String baggageAllowance, String mealsDuringFlight,
+                          double baggageKgLimit, boolean isOnlineRegistrationAvailable) {
         String typeOfFlight = "Внутренний";
 
         super(flightId, pointOfDeparture, destinationPoint, carrierCompany, typeOfFlight,
-                approximateFlightTime, departureTime, baseTicketPrice, numberOfSeats, bortId, nameOfTheAircraftModel);
+                approximateFlightTime, departureTime, baseTicketPrice, numberOfSeats,
+                bortId, nameOfTheAircraftModel, baggageAllowance, mealsDuringFlight);
 
-        this.baggageAllowance = baggageAllowance;
-        this.mealsDuringFlight = mealsDuringFlight;
+        this.baggageKgLimit = baggageKgLimit;
+        this.isOnlineRegistrationAvailable = isOnlineRegistrationAvailable;
+    }
+
+    /**
+     * Функция для вычисления доплаты за перевес багажа
+     * @param extraKg - double - перевес в кг
+     * @return double - стоимость певеса в рублях
+     */
+    public double calculateExtraBaggageCost(double extraKg){
+        return 500.0 * extraKg;
+    }
+
+    /**
+     * Функция для проверки допустимого веса багажа
+     * @param currentWeight double - принимает текущий вес багажа в кг
+     * @return String - возвращает строку с соотбщением о перевесе, если превышен лимит
+     */
+    public String checkBaggageExtraAllowance(double currentWeight){
+        if (currentWeight > this.baggageKgLimit){
+            double extraKg = currentWeight - this.baggageKgLimit;
+            return "Превышен лимит веса багажа. Перевес: " + extraKg;
+        } else {
+            return "Вес багажа не превысил лимит.";
+        }
+     }
+
+    /**
+     * Переопределённый метод вывода специальной информации о внутренних рейсах
+     */
+    @Override
+    public void CallingSpecialFunctions(){
+        if (this.isOnlineRegistrationAvailable) {
+            Rich.debugLog("Онлайн регистрация: Разрешена");
+        } else {
+            Rich.debugLog("Онлайн регистрация: Запрещена");
+        }
+
     }
 
     /**
@@ -68,8 +105,7 @@ public class DomesticFlight extends Flight {
      */
     @Override
     public double calculateTicketPrice() {
-        // Для внутреннего рейса базовая цена + 5% сервисный сбор (просто пример)
-        return getBaseTicketPrice() * 1.05;
+        return getBaseTicketPrice() * 1.02;
     }
 
     /**
