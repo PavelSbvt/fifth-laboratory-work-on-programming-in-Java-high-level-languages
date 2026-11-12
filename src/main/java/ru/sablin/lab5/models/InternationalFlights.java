@@ -8,41 +8,26 @@ import ru.sablin.lab5.utils.Rich;
  */
 public class InternationalFlights extends Flight{
     /**
-     * Норма провоза багажа
-     */
-    private String baggageAllowance;
-    /**
-     * Питание на борту (есть ли и, если есть, то какое)
-     */
-    private String mealsDuringFlight;
-    /**
      * Нужен ли загранпаспорт
      */
     private Boolean needVisa;
-
+    /**
+     * Наличие обратного билета
+     */
+    private boolean hasReturnTicket;
     //    Геттеры==============================================
-    public String getBaggageAllowance(){
-        return this.baggageAllowance;
-    }
-
-    public String getMealsDuringFlight(){
-        return this.mealsDuringFlight;
-    }
-
     public Boolean getNeedVisa(){
         return this.needVisa;
     }
+    public Boolean getHasReturnTicket(){
+        return this.hasReturnTicket;
+    }
     //    Сеттеры==============================================
-    public void setBaggageAllowance(String baggageAllowance){
-        this.baggageAllowance = baggageAllowance;
-    }
-
-    public void setMealsDuringFlight(String mealsDuringFlight){
-        this.mealsDuringFlight = mealsDuringFlight;
-    }
-
     public void setNeedVisa(Boolean needVisa){
         this.needVisa = needVisa;
+    }
+    public void setHasReturnTicket(Boolean hasReturnTicket){
+        this.hasReturnTicket = hasReturnTicket;
     }
 
     /**
@@ -60,6 +45,7 @@ public class InternationalFlights extends Flight{
      * @param baggageAllowance String - нормы багажа
      * @param mealsDuringFlight String - информация о питании во время полёта
      * @param needVisa Boolean - Требование загранпаспорта
+     * @param hasReturnTicket Boolean - наличие обратного билета
      */
     public InternationalFlights(int flightId,
                                 String pointOfDeparture,
@@ -73,26 +59,72 @@ public class InternationalFlights extends Flight{
                                 String nameOfTheAircraftModel,
                                 String baggageAllowance,
                                 String mealsDuringFlight,
-                                Boolean needVisa) {
+                                Boolean needVisa,
+                                Boolean hasReturnTicket) {
         String typeOfFlight = "Международный";
 
         super(flightId, pointOfDeparture, destinationPoint, carrierCompany, typeOfFlight,
                 approximateFlightTime, departureTime, baseTicketPrice, numberOfSeats,
-                bortId, nameOfTheAircraftModel);
+                bortId, nameOfTheAircraftModel, baggageAllowance, mealsDuringFlight);
 
-        this.baggageAllowance = baggageAllowance;
-        this.mealsDuringFlight = mealsDuringFlight;
         this.needVisa = needVisa;
+        this.hasReturnTicket = hasReturnTicket;
+    }
+
+    /**
+     * Функция для вычисления экономии при оформлении рейса с обратным билетом
+     * @return String - строка с пометкой "выгода" и суммой, которую сэкономит
+     * клиент при оформлении обратного билета
+     */
+    public String calculateReturnTicketSavings(){
+        double savings = (getBaseTicketPrice() * 1.25 * 2) - (getBaseTicketPrice() * 2.1);
+        return String.format("Выгода: %.2f руб.", savings);
+     }
+
+    /**
+     * Функция для получения текста предупреждения для клиентов рейсов,
+     * для которых нужна виза.
+     * @return String - строка с предупреждением о том, что нудна виза и напоминалка
+     */
+    public String textWarningMessage(){
+        if (needVisa){
+            return "Для полёта требуется виза. Не забудьте оформить визу и проверить" +
+                    " срок действия загранпаспорта";
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Переопределённый метод вывода специальной информации о международных рейсах
+     */
+    @Override
+    public void CallingSpecialFunctions(){
+        if (this.needVisa) {
+            Rich.debugLog("Требование загранпаспорта: да");
+        } else {
+            Rich.debugLog("Требование загранпаспорта: нет");
+        }
+
+        if (hasReturnTicket){
+            Rich.debugLog("Обратный билет: да");
+        } else {
+            Rich.debugLog("Обратный билет: нет");
+        }
     }
 
     /**
      * Переопределённый метод для получения итоговой стоимости билета
-     * с учётом повышаюшего коэффициента и, например, страховок
+     * с учётом повышаюшего коэффициента и наличия обратного билета
      * @return double итоговая стоимость билета
      */
     @Override
     public double calculateTicketPrice() {
-        return getBaseTicketPrice() * 1.1;
+        if (hasReturnTicket){
+            return getBaseTicketPrice() * 2.1;
+        } else {
+            return getBaseTicketPrice() * 1.25;
+        }
     }
 
     /**
@@ -111,7 +143,7 @@ public class InternationalFlights extends Flight{
      */
     @Override
     public String getAnnotationText(){
-        return "Международный рейс (InternationalFlight) — это авиаперелет, который" +
+        return "\n Международный рейс (InternationalFlight) — это авиаперелет, который" +
                 " выполняется между двумя или более государствами и обязательно " +
                 "предполагает пересечение государственных границ.\n" +
                 "\n" +
