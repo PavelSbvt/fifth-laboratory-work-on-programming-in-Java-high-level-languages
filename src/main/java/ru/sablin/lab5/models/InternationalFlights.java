@@ -6,7 +6,7 @@ import ru.sablin.lab5.utils.Rich;
 /**
  * Класс для межгосударственных рейсов
  */
-public class InternationalFlights extends Flight{
+public class InternationalFlights extends Flight implements Bookable, Refundable{
     /**
      * Нужен ли загранпаспорт
      */
@@ -163,5 +163,28 @@ public class InternationalFlights extends Flight{
                 "    Багаж: нормы провоза багажа регулируются международными " +
                 "конвенциями и правилами конкретных стран (часто действуют более " +
                 "строгие ограничения).";
+    }
+
+    //    Мультиимплеметация
+    // Из интерфейса Bookable
+    @Override
+    public boolean bookTicket(int seatsCount) {
+        if (seatsCount > 0 && seatsCount <= getNumberOfSeats()) {
+            setNumberOfSeats(getNumberOfSeats() - seatsCount); // Уменьшаем места
+            return true;
+        }
+        return false; // Не хватило мест
+    }
+    // Из интерфейса Refundable
+    @Override
+    public double calculateRefundAmount() {
+        // Возвращаем 80% стоимости (20% - штраф за возврат)
+        return calculateTicketPrice() * 0.8;
+    }
+
+    // Из интерфейса Refundable
+    @Override
+    public boolean isRefundable() {
+        return true; // Внутренние рейсы можно сдавать
     }
 }

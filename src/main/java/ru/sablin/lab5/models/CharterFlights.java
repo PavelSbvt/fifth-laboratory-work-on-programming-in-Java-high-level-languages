@@ -8,7 +8,7 @@ import ru.sablin.lab5.utils.Rich;
  * не только от органищаторов туров, но я захотел ограничиться только
  * чартерными рейсами от турагенств)
  */
-public class CharterFlights extends Flight {
+public class CharterFlights extends Flight implements TourBookable{
     /**
      * Название тура
      */
@@ -166,5 +166,27 @@ public class CharterFlights extends Flight {
                 "    Ценообразование: стоимость билета формируется туроператором и " +
                 "зависит от сезона, спроса и условий контракта с авиакомпанией (часто" +
                 " включает наценку за организацию перелета).";
+    }
+
+//  Интерфейс
+    /**
+     * Функция для брони тура
+     * @param touristsCount - количество туристов
+     * @return String - возвращает строку с состоянием операции
+     */
+    @Override
+    public String bookTour(int touristsCount) {
+        if (touristsCount > 0) {
+            if (touristsCount > getNumberOfSeats()) {
+                return "Ошибка: недостаточно мест на чартере! Свободно: " + getNumberOfSeats();
+            }
+
+            setNumberOfSeats(getNumberOfSeats() - touristsCount);
+
+            return "Тур успешно забронирован на " + touristsCount + " чел. " +
+                    "Организатор: " + getFlightOrganizer();
+        } else {
+            return "Введены некоррекстные данные";
+        }
     }
 }

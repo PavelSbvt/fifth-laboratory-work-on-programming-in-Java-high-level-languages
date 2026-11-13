@@ -1,12 +1,12 @@
 package ru.sablin.lab5.models;
-
 import ru.sablin.lab5.utils.Rich;
+import ru.sablin.lab5.exceptions.NoSeatsAvailableException;
 
 
 /**
  * Класс для внутренних рейсов
  */
-public class DomesticFlight extends Flight {
+public class DomesticFlight extends Flight implements Bookable, Refundable {
     /**
      * Возможна ли онлайн регистрация на рейс
      */
@@ -141,5 +141,38 @@ public class DomesticFlight extends Flight {
                 "\n" +
                 "    Ценообразование: стоимость билета, как правило, ниже, так как не " +
                 "включает международные аэропортовые сборы и пошлины.";
+    }
+
+//    Мультиимплеметация
+    // Из интерфейса Bookable
+    @Override
+    public boolean bookTicket(int seatsCount) throws NoSeatsAvailableException {
+        if (seatsCount <= 0) {
+            try {
+                throw new IllegalArgumentException("Количество мест должно быть больше нуля!");
+            } catch (IllegalArgumentException e) {
+                // Передаем 'e' вторым аргументом, чтобы сохранить причину ошибки
+                throw new NoSeatsAvailableException("Ошибка бронирования: " + e.getMessage(), e);
+            }
+        }
+
+        if (seatsCount > getNumberOfSeats()) {
+            throw new NoSeatsAvailableException("Недостаточно мест! Свободно: " + getNumberOfSeats());
+        }
+
+        setNumberOfSeats(getNumberOfSeats() - seatsCount);
+        return true;
+    }
+    // Из интерфейса Refundable
+    @Override
+    public double calculateRefundAmount() {
+        // Возвращаем 80% стоимости (20% - штраф за возврат)
+        return calculateTicketPrice() * 0.8;
+    }
+
+    // Из интерфейса Refundable
+    @Override
+    public boolean isRefundable() {
+        return true; // Внутренние рейсы можно сдавать
     }
 }
