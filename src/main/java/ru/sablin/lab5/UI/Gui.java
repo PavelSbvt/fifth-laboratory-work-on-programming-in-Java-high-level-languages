@@ -106,11 +106,17 @@ public class Gui extends JFrame {
                 try {
                     int seats = Integer.parseInt(seatsField.getText());
 
-                    bookingService.stepThree_UserClickedBookButton(currentFlight, seats);
+                    boolean flag = bookingService.stepThree_UserClickedBookButton(currentFlight, seats);
 
-                    JOptionPane.showMessageDialog(Gui.this,
-                            "Операция бронирования завершена успешно!",
-                            "Успех", JOptionPane.INFORMATION_MESSAGE);
+                    if (flag){
+                        JOptionPane.showMessageDialog(Gui.this,
+                                "Операция бронирования завершена успешно!",
+                                "Успех", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(Gui.this,
+                                "Операция бронирования прервана. Ошибка",
+                                "Ошибка", JOptionPane.INFORMATION_MESSAGE);
+                    }
 
                     showInfoButton.doClick();
 

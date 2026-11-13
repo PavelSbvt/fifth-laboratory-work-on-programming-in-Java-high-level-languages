@@ -26,6 +26,8 @@ public class BookingService {
     public void stepTwo_ProcessBooking(Flight flight, int seats) throws NoSeatsAvailableException {
         Rich.debugLog("-> [2] Запускаем процесс бронирования...");
 
+        stepOne_CheckAvailableSeats(flight, seats);
+
         // Проверяем, умеет ли этот рейс бронировать билеты
         if (flight instanceof Bookable) {
             Bookable bookableFlight = (Bookable) flight;
@@ -40,17 +42,19 @@ public class BookingService {
     }
 
     // Ф 3: Самая верхняя. Вызывает Ф 2. ловит исключения
-    public void stepThree_UserClickedBookButton(Flight flight, int seats) {
+    public boolean stepThree_UserClickedBookButton(Flight flight, int seats) {
         Rich.debugLog("-> [3] Пользователь нажал кнопку 'Забронировать'");
 
         try {
             // вторую функцию
             stepTwo_ProcessBooking(flight, seats);
             Rich.simpleLog("Успех! Билеты забронированы.");
+            return true;
 
         } catch (NoSeatsAvailableException e) {
             // Цепочка прервана. Дальше исключение не идет.
             Rich.warningLog("ошибка. обработано в ф 3: " + e.getMessage());
+            return false;
 
         } finally {
             Rich.debugLog("-> [3] Блок finally: записываем факт " +
