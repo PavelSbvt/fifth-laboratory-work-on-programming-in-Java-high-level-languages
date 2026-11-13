@@ -1,59 +1,51 @@
 package ru.sablin.lab5.models;
 
 
+import ru.sablin.lab5.utils.Rich;
+
 /**
- * Класс для чартерных рейсов
+ * Класс для чартерных рейсов (для туров. чартерные рейсы могут быть
+ * не только от органищаторов туров, но я захотел ограничиться только
+ * чартерными рейсами от турагенств)
  */
 public class CharterFlights extends Flight {
     /**
-     * Норма провоза багажа
+     * Название тура
      */
-    private String baggageAllowance;
-    /**
-     * Питание на борту (есть ли и, если есть, то какое)
-     */
-    private String mealsDuringFlight;
-    /**
-     * Нужен ли загранпаспорт
-     */
-    private Boolean needVisa;
+    private String nameTour;
 
     /**
      * Организатор рейса (например, туроператор)
      */
     private String flightOrganizer;
+    /**
+     * Минимальное число пассажиров
+     */
+    private int minimumRequiredPassengers;
 
     //    Геттеры==============================================
-    public String getBaggageAllowance(){
-        return this.baggageAllowance;
-    }
-
-    public String getMealsDuringFlight(){
-        return this.mealsDuringFlight;
-    }
-
-    public Boolean getNeedVisa(){
-        return this.needVisa;
+    public String getNameTour(){
+        return this.nameTour;
     }
 
     public String getFlightOrganizer(){
         return this.flightOrganizer;
     }
+    public int getMinimumRequiredPassengers(){
+        return this.minimumRequiredPassengers;
+    }
+
+
     //    Сеттеры==============================================
-    public void setBaggageAllowance(String baggageAllowance){
-        this.baggageAllowance = baggageAllowance;
-    }
-
-    public void setMealsDuringFlight(String mealsDuringFlight){
-        this.mealsDuringFlight = mealsDuringFlight;
-    }
-
-    public void setNeedVisa(Boolean needVisa){
-        this.needVisa = needVisa;
+    public void setNameTour(String nameTour){
+        this.nameTour = nameTour;
     }
 
     public void setFlightOrganizer(String flightOrganizer){
         this.flightOrganizer = flightOrganizer;
+    }
+    public void setMinimumRequiredPassengers(int minimumRequiredPassengers){
+        this.minimumRequiredPassengers = minimumRequiredPassengers;
     }
 
     /**
@@ -70,8 +62,9 @@ public class CharterFlights extends Flight {
      * @param nameOfTheAircraftModel String - название модели самолёта (борта)
      * @param baggageAllowance String - нормы багажа
      * @param mealsDuringFlight String - информация о питании во время полёта
-     * @param needVisa Boolean - Требование загранпаспорта
+     * @param nameTour String - название тура от агенстрва
      * @param flightOrganizer String - организатор рейса (например, туроператор)
+     * @param minimumRequiredPassengers int - минимальное число пассажиров на рейс
      */
     public CharterFlights(int flightId,
                                 String pointOfDeparture,
@@ -85,18 +78,44 @@ public class CharterFlights extends Flight {
                                 String nameOfTheAircraftModel,
                                 String baggageAllowance,
                                 String mealsDuringFlight,
-                                Boolean needVisa,
-                                String flightOrganizer) {
+                                String nameTour,
+                                String flightOrganizer,
+                                int minimumRequiredPassengers) {
         String typeOfFlight = "Чартерный";
 
         super(flightId, pointOfDeparture, destinationPoint, carrierCompany, typeOfFlight,
                 approximateFlightTime, departureTime, baseTicketPrice, numberOfSeats,
-                bortId, nameOfTheAircraftModel);
+                bortId, nameOfTheAircraftModel, baggageAllowance, mealsDuringFlight);
 
-        this.baggageAllowance = baggageAllowance;
-        this.mealsDuringFlight = mealsDuringFlight;
-        this.needVisa = needVisa;
+        this.nameTour = nameTour;
         this.flightOrganizer = flightOrganizer;
+        this.minimumRequiredPassengers = minimumRequiredPassengers;
+    }
+
+    /**
+     * Функция для проверки набора минимального числа пассажиров на рейс
+     * @param currentPassengers int - минимальное число пассажиров
+     * @return String - строка-сообщение о статусе рейса
+     */
+    public String checkFlightLoadStatus(int currentPassengers){
+        if (currentPassengers < this.minimumRequiredPassengers){
+            return "Вероятно, рейс отменят. Не набрано минимально количество" +
+                    " пассажиров (" + currentPassengers + "/" +
+                    this.minimumRequiredPassengers + ")";
+        } else {
+            return "Рейс состоится. Набрано пассажиров: " + currentPassengers
+                    + "/" + this.minimumRequiredPassengers;
+        }
+    }
+    /**
+     * Переопределённый метод вывода специальной информации о международных рейсах
+     */
+    @Override
+    public void CallingSpecialFunctions(){
+        Rich.debugLog("Название тура: " + this.nameTour);
+        Rich.debugLog("Организатор: " + this.flightOrganizer);
+        Rich.debugLog("Минимальное число пассажиров: " + this.minimumRequiredPassengers);
+//        Rich.debugLog("Статус рейса: " + this.checkFlightLoadStatus());
     }
 
     /**

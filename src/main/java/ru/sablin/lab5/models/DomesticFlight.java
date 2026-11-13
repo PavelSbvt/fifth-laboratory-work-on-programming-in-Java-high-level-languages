@@ -95,7 +95,7 @@ public class DomesticFlight extends Flight {
         } else {
             Rich.debugLog("Онлайн регистрация: Запрещена");
         }
-
+        Rich.debugLog("Лимит провоза багажа: " + this.baggageKgLimit);
     }
 
     /**
